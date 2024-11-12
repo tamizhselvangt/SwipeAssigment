@@ -11,33 +11,40 @@ import SwiftData
 
 // ViewModel to manage products
 class ProductViewModel: ObservableObject {
+    
     @Published var products: [Product] = []
       
-    
+    //Every time it calls the api response
     init() {
         fetchProducts()
     }
     
+    
+    //Select the Favorite
     func toggleFavorite(for productId: UUID) {
           if let index = products.firstIndex(where: { $0.id == productId }) {
-              // This will automatically update UserDefaults through the computed property
-
+            
               products[index].isFavorite.toggle()
-                          // Save the new status in UserDefaults
+                          
                           products[index].setFavorite(products[index].isFavorite)
                           objectWillChange.send()
           }
       }
-//    
+  
+    
+    //Save Favorites/Stared Products in UserDefaults
     private func saveFavoriteStatus(productId: UUID, isFavorite: Bool) {
          UserDefaults.standard.set(isFavorite, forKey: "favorite_\(productId)")
      }
      
+    
+    //Load the Saved Prodycts
      private func loadFavoriteStatus(productId: UUID) -> Bool {
          return UserDefaults.standard.bool(forKey: "favorite_\(productId)")
      }
      
     
+    //Fetch Method retrive data from an api 
     func fetchProducts() {
         guard let url = URL(string: "https://app.getswipe.in/api/public/get") else { return }
 

@@ -11,7 +11,8 @@ import SwiftUI
 struct SwipeAssigmentApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
-        }
+                  ContentView()
+                     
+              }
     }
 }

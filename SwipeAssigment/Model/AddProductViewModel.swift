@@ -28,7 +28,6 @@ class AddProductViewModel: ObservableObject {
     @Published var successMessage: String?
     @Published var errorMessage: String?
 
-    private var cancellables = Set<AnyCancellable>()
 
     // Validate fields before submission
     var isFormValid: Bool {
@@ -140,85 +139,3 @@ class AddProductViewModel: ObservableObject {
         selectedImage = nil
     }
 }
-
-//
-//class AddProductViewModel: ObservableObject {
-//    @Published var productName: String = ""
-//    @Published var productType: String = ""
-//    @Published var price: String = ""
-//    @Published var tax: String = ""
-//    @Published var imageURL: String = ""
-//    @Published var isLoading = false
-//    @Published var successMessage: String?
-//    @Published var errorMessage: String?
-//
-//    private var cancellables = Set<AnyCancellable>()
-//
-//    // Validate fields before submission
-//    var isFormValid: Bool {
-//        guard !productName.isEmpty, !productType.isEmpty,
-//              let _ = Double(price), let _ = Double(tax) else {
-//            return false
-//        }
-//        return true
-//    }
-//
-//    // POST request to submit the product
-//    func submitProduct() {
-//        guard isFormValid else {
-//            errorMessage = "Please fill in all fields with valid values."
-//            return
-//        }
-//
-//        // Begin loading
-//        isLoading = true
-//        errorMessage = nil
-//        successMessage = nil
-//
-//        // URL and request setup
-//        guard let url = URL(string: "https://app.getswipe.in/api/public/add") else { return }
-//        var request = URLRequest(url: url)
-//        request.httpMethod = "POST"
-//        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//
-//        // Prepare data for submission
-//        var productData: [String: Any] = [
-//            "product_name": productName,
-//            "product_type": productType,
-//            "price": Double(price) ?? 0.0,
-//            "tax": Double(tax) ?? 0.0,
-//            "image_url": imageURL  // Use imageURL instead of selectedImage data
-//        ]
-//
-//        do {
-//            request.httpBody = try JSONSerialization.data(withJSONObject: productData, options: [])
-//        } catch {
-//            isLoading = false
-//            errorMessage = "Failed to prepare product data."
-//            return
-//        }
-//
-//        // Perform the network request
-//        URLSession.shared.dataTask(with: request) { data, response, error in
-//            DispatchQueue.main.async {
-//                self.isLoading = false
-//
-//                if error != nil || (response as? HTTPURLResponse)?.statusCode != 200 {
-//                    self.errorMessage = "Failed to submit product. Please try again later."
-//                } else {
-//                    self.successMessage = "Product submitted successfully!"
-//                    self.clearForm()
-//                }
-//            }
-//        }.resume()
-//    }
-//
-//    // Clear form after successful submission
-//    private func clearForm() {
-//        productName = ""
-//        productType = ""
-//        price = ""
-//        tax = ""
-//        imageURL = ""
-//    }
-//}

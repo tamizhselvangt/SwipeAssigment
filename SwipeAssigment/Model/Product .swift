@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 
-// Model for Product
+// Product Model
 struct Product: Codable, Identifiable, Hashable {
     var id: UUID
     var image: String?
@@ -17,21 +17,14 @@ struct Product: Codable, Identifiable, Hashable {
     var product_name: String
     var product_type: String
     var tax: Double
-//    var isFavorite: Bool // store the current favorite status in the model
+//    var isFavorite: Bool
+    
     var isFavorite: Bool {
         get { UserDefaults.standard.bool(forKey: "favorite_\(id.uuidString)") }
         set { UserDefaults.standard.set(newValue, forKey: "favorite_\(id.uuidString)") }
     }
 
     
-//    var isFavorite: Bool {
-//            get {
-//                UserDefaults.standard.bool(forKey: "favorite_\(id.uuidString)")
-//            }
-//            set {
-//                UserDefaults.standard.set(newValue, forKey: "favorite_\(id.uuidString)")
-//            }
-//        }
     
     init(image: String? = nil, price: Double, product_name: String, product_type: String, tax: Double) {
         self.id = UUID()
@@ -43,6 +36,7 @@ struct Product: Codable, Identifiable, Hashable {
         self.isFavorite = UserDefaults.standard.bool(forKey: "favorite_\(id.uuidString)")
     }
 
+    //Convert the Tax & Price to two Decimal Places
     func twoDecimals(number: Float) -> String {
         return String(format: "%.2f", number)
     }
@@ -52,6 +46,7 @@ struct Product: Codable, Identifiable, Hashable {
         UserDefaults.standard.set(favorite, forKey: "favorite_\(id.uuidString)")
     }
 }
+
 
 // Struct to decode JSON from the API
 struct ProductResponse: Decodable {

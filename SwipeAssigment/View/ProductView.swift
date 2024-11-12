@@ -9,6 +9,10 @@ import SwiftUI
 
 struct ProductView: View {
     
+    //Detect the Theme
+    @Environment(\.colorScheme) var colorScheme
+    
+    //Properties in the Product View
     @Binding var isFavorite: Bool
     @State var imageURL : String
     @State var productName: String
@@ -18,7 +22,12 @@ struct ProductView: View {
     
     let onFavoriteToggle: () -> Void
     
-    var width : CGFloat  = 180
+    
+    
+//    var width : CGFloat  = 180
+    
+    let width : CGFloat = UIScreen.main.bounds.width * 0.45
+   
     
     var body: some View {
                 
@@ -30,18 +39,22 @@ struct ProductView: View {
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: width , height: 200)
+                                .frame(maxWidth: .infinity)
                                 .clipped()
-                                .cornerRadius(10)
+                                .cornerRadius(5)
                         } placeholder: {
                             VStack {
                                 Image(systemName: "photo.on.rectangle.angled")
                                     .font(.largeTitle)
                                     .padding(.bottom,10)
-                                    .foregroundStyle(.black.opacity(0.6))
+                                    .foregroundStyle(
+                                        colorScheme == .dark ? .white.opacity(0.6) :
+                                        .black.opacity(0.6))
                                 
                                 Text("No Product Image")
                                     .font(.title3)
-                                    .foregroundStyle(.black.opacity(0.6))
+                                    .foregroundStyle(
+                                        colorScheme == .dark ? .white.opacity(0.6) : .black.opacity(0.6))
                                     .fontWeight(.semibold)
                              
                                 
@@ -82,7 +95,8 @@ struct ProductView: View {
                     Text(productCategory)
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.gray)
+                        .foregroundStyle(
+                            colorScheme == .dark ? .white.opacity(0.6) : .gray)
                         .padding(.leading, 5)
                         .padding(.top, 8)
                         .frame(maxHeight: 20)
@@ -93,10 +107,12 @@ struct ProductView: View {
                         .font(.headline)
                         .frame(maxHeight: 45)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(
+                            colorScheme == .dark ? .white : .black)
                         .padding(.leading, 8)
                     
                     
+                    //Tax and Price of the Product
                     HStack(spacing: 1){
                         Image(systemName: "percent")
                             .font(.footnote)
@@ -104,10 +120,12 @@ struct ProductView: View {
                             .foregroundStyle(.orange)
                             .padding(.leading, 8)
                         
+                        //Tax amount
                         Text("\(tax)")
                             .font(.callout)
                             .fontWeight(.semibold)
-                            .foregroundStyle(.gray.opacity(0.7))
+                            .foregroundStyle(
+                                colorScheme == .dark ? .white.opacity(0.9) : .gray.opacity(0.7))
                             .foregroundStyle(.black)
                         
                         Spacer()
@@ -116,7 +134,7 @@ struct ProductView: View {
                             .font(.headline)
                             .fontWeight(.semibold)
                             .foregroundStyle(.green)
-
+                       //Price Amount
                         Text("\(productPrice)")
                             .font(.headline)
                             .fontWeight(.semibold)
@@ -133,7 +151,8 @@ struct ProductView: View {
                     
                 }//:VStack
                 .background(
-                    Color.white.edgesIgnoringSafeArea(.all)
+                    colorScheme == .dark ?
+                    Color.gray.opacity(0.5).edgesIgnoringSafeArea(.all)   .cornerRadius(10) : Color.white.edgesIgnoringSafeArea(.all)
                         .cornerRadius(10)
                 )
                 .frame(maxWidth: width)

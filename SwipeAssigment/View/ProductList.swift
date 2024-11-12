@@ -25,6 +25,10 @@ import SwiftData
 
 struct ProductList: View {
     
+    
+    //Detect the Theme
+    @Environment(\.colorScheme) var colorScheme
+    
     @State private var isAddProduct : Bool = false
     
     @StateObject private var productModel = ProductViewModel()
@@ -39,6 +43,8 @@ struct ProductList: View {
         GridItem(.flexible())
     ]
  
+    
+    //Search Fileter
      private func applySearchFilter(_ products: [Product]) -> [Product] {
          guard !searchText.isEmpty else { return products }
          return products.filter { product in
@@ -47,19 +53,21 @@ struct ProductList: View {
          }
      }
      
-   
+     //Favorite Filter
     private func applyFavoriteFilter(_ products: [Product]) -> [Product] {
         guard filteredByInterested else { return products }
         return products.filter { $0.isFavorite }
     }
 
-     
+     //Filtered Products
      private var filteredProducts: [Product] {
          let searchFiltered = applySearchFilter(productModel.products)
          let favoriteFiltered = applyFavoriteFilter(searchFiltered)
          return favoriteFiltered
      }
      
+    
+    //For Pagination
      private var paginatedProducts: [Product] {
          Array(filteredProducts.prefix(currentPage * itemsPerPage))
      }
@@ -91,7 +99,7 @@ struct ProductList: View {
                         }
                     }
                     .padding(.horizontal, 20)
-                }
+                }//:Scroll View
                 .refreshable {
                    
                     productModel.fetchProducts()
@@ -100,15 +108,19 @@ struct ProductList: View {
                 .navigationTitle("Products")
                 .searchable(text: $searchText, prompt: "Find a Place")
                 .animation(.default, value: searchText)
-            }
+            }//:VStack
             .background(Color.gray.opacity(0.1))
             .toolbar{
+           
+                //Add Product Button Shows sheet
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Show Images",systemImage: "plus"){
                         isAddProduct.toggle()
                     }
-                    .tint(.black)
+                    .tint(colorScheme == .dark ? Color.white : .black)
                 }
+                
+                //Star Icon for Select Favorites
                 ToolbarItem(placement: .topBarLeading) {
                     Button( "Filter",systemImage:
                                 filteredByInterested ?
@@ -119,16 +131,19 @@ struct ProductList: View {
                         }
                         
                     }
-                            .tint(filteredByInterested ? Color.black : .black)
+                            .tint(
+                                colorScheme == .dark ? Color.white : .black)
                 }
-            }
+            }//ToolBar
             .sheet(isPresented: $isAddProduct) {
                 
                 AddProductView(isAddProduct: $isAddProduct)
              
             }
-        }
+        }//:NavigationStack
+        .navigationViewStyle(StackNavigationViewStyle())
     }
+    
     
     private func loadMoreProductsIfNeeded(product: Product) {
         let thresholdIndex = (currentPage * itemsPerPage) - 3
