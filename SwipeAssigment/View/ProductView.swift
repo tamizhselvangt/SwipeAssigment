@@ -9,12 +9,14 @@ import SwiftUI
 
 struct ProductView: View {
     
-    @State var isFavorite: Bool = false
+    @Binding var isFavorite: Bool
     @State var imageURL : String
     @State var productName: String
     @State var productPrice: String
     @State var tax: Int
     @State var productCategory: String
+    
+    let onFavoriteToggle: () -> Void
     
     var width : CGFloat  = 180
     
@@ -32,12 +34,16 @@ struct ProductView: View {
                                 .cornerRadius(10)
                         } placeholder: {
                             VStack {
-                                Image(systemName: "photo.fill")
-                                    .padding()
-                                Text("Product Image")
-                                    .font(.title2)
-                                    .foregroundStyle(.gray.opacity(0.7))
+                                Image(systemName: "photo.on.rectangle.angled")
+                                    .font(.largeTitle)
+                                    .padding(.bottom,10)
+                                    .foregroundStyle(.black.opacity(0.6))
+                                
+                                Text("No Product Image")
+                                    .font(.title3)
+                                    .foregroundStyle(.black.opacity(0.6))
                                     .fontWeight(.semibold)
+                             
                                 
                             }
                             .frame(width: width, height: 200)
@@ -46,32 +52,27 @@ struct ProductView: View {
                         }
                         .background(
                             Rectangle()
-                                .foregroundColor(.gray.opacity(0.4))
-                                .cornerRadius(10)
+                                .foregroundColor(.gray.opacity(0.3))
+                                .cornerRadius(5)
                         )
                         
                         
-                        
-                        Image(systemName: isFavorite ? "heart.fill" : "heart")
-                            .font(.title3)
-                            .foregroundStyle(isFavorite ? .red : .white)
-                            .padding(.all, 8)
-                            .shadow(color: .white ,radius: 50)
-                            .background(
-                                Rectangle()
-                                    .foregroundColor(.gray.opacity(0.6))
-                                    .cornerRadius(100)
-                            )
-                            .overlay(
-                                Image(systemName:  "heart")
-                                    .font(.title2)
-                                    .fontWeight(.thin)
-                                    .foregroundStyle(isFavorite ? .white : .clear)
-                            )
-                            .padding()
-                            .onTapGesture {
-                                isFavorite.toggle()
-                            }
+                        Button(action: {
+                            isFavorite.toggle()
+                            onFavoriteToggle()
+                        }) {
+                            Image(systemName: isFavorite ? "star.fill" : "star")
+                                .font(.title3)
+                                .foregroundStyle(isFavorite ? .yellow : .white)
+                                .padding(.all, 8)
+                                .background(
+                                    Rectangle()
+                                        .foregroundColor(.gray.opacity(0.6))
+                                        .cornerRadius(100)
+                                )
+                                .padding()
+                        }
+
                         
                     }//:ZStack
                     
@@ -146,10 +147,13 @@ struct ProductView: View {
 
 #Preview {
     
-    @Previewable @State var isFavorite: Bool = false
+    @State var isFavorite: Bool = false
+    let previewViewModel = ProductViewModel()
     ProductView(
-//        isFavorite: $isFavorite,
-        imageURL: "https://vx-erp-product-images.s3.ap-south-1.amazonaws.com/9_1731337255_0_image.jpg", productName: "iPad 6th Gen Refurbished", productPrice: "999.99", tax: 6, productCategory: "Elctronics"
+        isFavorite: $isFavorite,
+        imageURL: "htts://media.wired.com/photos/670e8085062f39643092bda6/master/w_2240,c_limit/ipad-mini-gear-241015.jpg", productName: "iPad 6th Gen Refurbished", productPrice: "999.99", tax: 6, productCategory: "Elctronics", onFavoriteToggle: {
+            
+        }
     )
    
 }

@@ -17,10 +17,20 @@ struct Product: Codable, Identifiable, Hashable {
     var product_name: String
     var product_type: String
     var tax: Double
+//    var isFavorite: Bool // store the current favorite status in the model
+    var isFavorite: Bool {
+        get { UserDefaults.standard.bool(forKey: "favorite_\(id.uuidString)") }
+        set { UserDefaults.standard.set(newValue, forKey: "favorite_\(id.uuidString)") }
+    }
+
     
 //    var isFavorite: Bool {
-//            get { UserDefaults.standard.bool(forKey: "\(id)_isFavorite") }
-//            set { UserDefaults.standard.set(newValue, forKey: "\(id)_isFavorite") }
+//            get {
+//                UserDefaults.standard.bool(forKey: "favorite_\(id.uuidString)")
+//            }
+//            set {
+//                UserDefaults.standard.set(newValue, forKey: "favorite_\(id.uuidString)")
+//            }
 //        }
     
     init(image: String? = nil, price: Double, product_name: String, product_type: String, tax: Double) {
@@ -30,18 +40,16 @@ struct Product: Codable, Identifiable, Hashable {
         self.product_name = product_name
         self.product_type = product_type
         self.tax = tax
+        self.isFavorite = UserDefaults.standard.bool(forKey: "favorite_\(id.uuidString)")
     }
 
     func twoDecimals(number: Float) -> String {
         return String(format: "%.2f", number)
     }
 
-    static func == (lhs: Product, rhs: Product) -> Bool {
-        return lhs.id == rhs.id
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+    mutating func setFavorite(_ favorite: Bool) {
+        isFavorite = favorite
+        UserDefaults.standard.set(favorite, forKey: "favorite_\(id.uuidString)")
     }
 }
 
@@ -53,8 +61,5 @@ struct ProductResponse: Decodable {
     let product_name: String
     let product_type: String
     let tax: Double
-    
-    
-    
 }
 

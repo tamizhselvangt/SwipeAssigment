@@ -5,6 +5,18 @@
 //  Created by Tamizhselvan gurusamy on 11/10/24.
 //
 
+//    private var filteredProducts: [Product] {
+//           guard !searchText.isEmpty else {
+//               return productModel.products
+//           }
+//
+//           return productModel.products.filter { product in
+//               product.product_name.lowercased().contains(searchText.lowercased()) ||
+//               product.product_type.lowercased().contains(searchText.lowercased())
+//           }
+//       }
+
+
 import Foundation
 import SwiftUI
 import SwiftData
@@ -13,7 +25,7 @@ import SwiftData
 
 struct ProductList: View {
     
-    @State private var addImage : Bool = false
+    @State private var isAddProduct : Bool = false
     
     @StateObject private var productModel = ProductViewModel()
     @State private var searchText: String = ""
@@ -26,7 +38,33 @@ struct ProductList: View {
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
+ 
+     private func applySearchFilter(_ products: [Product]) -> [Product] {
+         guard !searchText.isEmpty else { return products }
+         return products.filter { product in
+             product.product_name.lowercased().contains(searchText.lowercased()) ||
+             product.product_type.lowercased().contains(searchText.lowercased())
+         }
+     }
+     
+   
+    private func applyFavoriteFilter(_ products: [Product]) -> [Product] {
+        guard filteredByInterested else { return products }
+        return products.filter { $0.isFavorite }
+    }
 
+     
+     private var filteredProducts: [Product] {
+         let searchFiltered = applySearchFilter(productModel.products)
+         let favoriteFiltered = applyFavoriteFilter(searchFiltered)
+         return favoriteFiltered
+     }
+     
+     private var paginatedProducts: [Product] {
+         Array(filteredProducts.prefix(currentPage * itemsPerPage))
+     }
+
+    
     var body: some View {
      
         NavigationView {
@@ -35,13 +73,17 @@ struct ProductList: View {
                 // Product Grid
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 0) {
-                        ForEach(productModel.products.prefix(currentPage * itemsPerPage)) { product in
+                        ForEach(paginatedProducts) { product in
                             ProductView(
+                                isFavorite: .constant(product.isFavorite),
                                 imageURL: product.image ?? "",
                                 productName: product.product_name,
                                 productPrice: product.twoDecimals(number: Float(product.price)),
                                 tax: Int(product.tax),
-                                productCategory: product.product_type
+                                productCategory: product.product_type,
+                                    onFavoriteToggle: {
+                                        productModel.toggleFavorite(for: product.id)
+                                    }
                             )
                             .onAppear {
                                 loadMoreProductsIfNeeded(product: product)
@@ -63,26 +105,26 @@ struct ProductList: View {
             .toolbar{
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Show Images",systemImage: "plus"){
-                        addImage.toggle()
+                        isAddProduct.toggle()
                     }
-                    .tint(filteredByInterested ? .red : .black)
+                    .tint(.black)
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Button( "Filter",systemImage:
                                 filteredByInterested ?
-                            "heart.fill" : "heart"){
+                            "star.fill" : "star"){
                         
                         withAnimation {
                             filteredByInterested.toggle()
                         }
                         
                     }
-                            .tint(filteredByInterested ? .red : .black)
+                            .tint(filteredByInterested ? Color.black : .black)
                 }
             }
-            .sheet(isPresented: $addImage) {
+            .sheet(isPresented: $isAddProduct) {
                 
-                AddProductView()
+                AddProductView(isAddProduct: $isAddProduct)
              
             }
         }

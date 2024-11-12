@@ -12,20 +12,31 @@ import SwiftData
 // ViewModel to manage products
 class ProductViewModel: ObservableObject {
     @Published var products: [Product] = []
-       private var allProducts: [Product] = []
+      
     
     init() {
         fetchProducts()
     }
     
-//    func toggleFavorite(for product: Product) {
-//          var updatedProduct = product
-////          updatedProduct.isFavorite.toggle()
-//          
-//          if let index = products.firstIndex(where: { $0.id == product.id }) {
-//              products[index] = updatedProduct
-//          }
-//      }
+    func toggleFavorite(for productId: UUID) {
+          if let index = products.firstIndex(where: { $0.id == productId }) {
+              // This will automatically update UserDefaults through the computed property
+
+              products[index].isFavorite.toggle()
+                          // Save the new status in UserDefaults
+                          products[index].setFavorite(products[index].isFavorite)
+                          objectWillChange.send()
+          }
+      }
+//    
+    private func saveFavoriteStatus(productId: UUID, isFavorite: Bool) {
+         UserDefaults.standard.set(isFavorite, forKey: "favorite_\(productId)")
+     }
+     
+     private func loadFavoriteStatus(productId: UUID) -> Bool {
+         return UserDefaults.standard.bool(forKey: "favorite_\(productId)")
+     }
+     
     
     func fetchProducts() {
         guard let url = URL(string: "https://app.getswipe.in/api/public/get") else { return }
